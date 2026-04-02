@@ -14,7 +14,7 @@ import db
 import memory as mem
 import llm as llm_module
 from executor import execute_tool
-from tools.telegram_sender import send_message, send_typing_action, send_photo_base64
+from telegram_sender import send_message, send_typing_action, send_photo_base64
 from config import RECENT_MESSAGES_LIMIT, APP_URL
 
 router = APIRouter()
@@ -169,7 +169,7 @@ async def _send_gmail_link(bot_token: str, chat_id: int,
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def _handle_browser_confirm(bot_token, chat_id, user, user_config, pending):
-    from tools.browser import submit_form
+    from browser import submit_form
     await send_message(bot_token, chat_id, "✓ Submitting now...")
     result = await submit_form(pending["session_id"])
     if result.get("screenshot_base64"):
@@ -182,7 +182,7 @@ async def _handle_browser_confirm(bot_token, chat_id, user, user_config, pending
 
 
 async def _handle_browser_cancel(bot_token, chat_id, user, pending):
-    from tools.browser import cancel_session
+    from browser import cancel_session
     await cancel_session(pending["session_id"])
     db.delete_pending_browser_session(user["id"])
     await send_message(bot_token, chat_id, "Cancelled. Nothing was submitted.")
