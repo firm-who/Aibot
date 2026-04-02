@@ -66,11 +66,10 @@ async def telegram_webhook(bot_token: str, request: Request):
     user = db.get_user_by_telegram_id(chat_id, tenant_id)
 
    if not user:
-    chat_id_display = chat_id  # Show it to them
-    await send_message(bot_token, chat_id,
-        f"You are not authorized.\n"
-        f"(Your ID: {chat_id})\n"
-        f"Contact your administrator.")
+        await send_message(bot_token, chat_id,
+            f"You are not authorized.\n"
+            f"(Your ID: {chat_id})\n"
+            f"Contact your administrator.")
         return {"ok": True}
 
     # Keep bot token fresh
