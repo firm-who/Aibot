@@ -13,7 +13,7 @@ from fastapi import APIRouter, Request, HTTPException
 import db
 import memory as mem
 import llm as llm_module
-from tools.executor import execute_tool
+from executor import execute_tool
 from tools.telegram_sender import send_message, send_typing_action, send_photo_base64
 from config import RECENT_MESSAGES_LIMIT, APP_URL
 
