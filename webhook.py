@@ -65,7 +65,7 @@ async def telegram_webhook(bot_token: str, request: Request):
     # ── 2. Look up or create user (scoped to tenant) ──────────────────────────
     user = db.get_user_by_telegram_id(chat_id, tenant_id)
 
-   if not user:
+    if not user:
         await send_message(bot_token, chat_id,
             f"You are not authorized.\n"
             f"(Your ID: {chat_id})\n"
