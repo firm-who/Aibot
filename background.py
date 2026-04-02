@@ -18,7 +18,7 @@ from datetime import datetime, timezone, timedelta
 
 import db
 import llm as llm_module
-from tools.telegram_sender import send_message_sync
+from telegram_sender import send_message_sync
 from config import PROACTIVE_SILENCE_HOURS
 
 

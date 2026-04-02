@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
     
     # Auto-register webhooks for all active tenants at startup
     import db
-    from tools.telegram_sender import register_webhook
+    from telegram_sender import register_webhook
     tenants = db.get_all_tenants()
     for tenant in tenants:
         if tenant.get("telegram_bot_token") and config.APP_URL:
@@ -70,7 +70,7 @@ async def health_check():
 
 @app.post("/setup-webhook")
 async def setup_webhook(bot_token: str):
-    from tools.telegram_sender import register_webhook
+    from telegram_sender import register_webhook
     webhook_url = f"{config.APP_URL}/webhook/{bot_token}"
     ok = await register_webhook(bot_token, webhook_url)
     return {"ok": ok, "webhook_url": webhook_url}

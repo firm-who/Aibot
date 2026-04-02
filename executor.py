@@ -133,7 +133,7 @@ async def execute_tool(tool_name: str, arguments: dict, user: dict,
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def _execute_send_email(args: dict, user_config: dict, user_id: str) -> str:
-    from tools.email import send_email
+    from email import send_email
     gmail_token = user_config.get("gmail_token")
     if not gmail_token:
         return "Cannot send email — Gmail not connected. Ask user to say 'connect my Gmail'."
@@ -151,7 +151,7 @@ async def _execute_send_email(args: dict, user_config: dict, user_id: str) -> st
 
 
 async def _execute_read_emails(args: dict, user_config: dict) -> str:
-    from tools.email import read_emails
+    from email import read_emails
     gmail_token = user_config.get("gmail_token")
     if not gmail_token:
         return "Gmail not connected."
@@ -171,14 +171,14 @@ async def _execute_read_emails(args: dict, user_config: dict) -> str:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def _execute_web_search(args: dict) -> str:
-    from tools.search import web_search
+    from search import web_search
     return web_search(query=args["query"], max_results=args.get("max_results", 5))
 
 
 async def _execute_browse_url(args: dict, user_config: dict,
                                user: dict, telegram_chat_id: int, bot_token: str) -> str:
-    from tools.browser import browse_url
-    from tools.telegram_sender import send_photo_base64
+    from browser import browse_url
+    from telegram_sender import send_photo_base64
     result = await browse_url(
         url=args["url"], instruction=args["instruction"],
         user_config=user_config,
