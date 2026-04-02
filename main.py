@@ -18,9 +18,24 @@ from background import run_proactive_worker
 
 scheduler = BackgroundScheduler()
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    config.load_remote_config() 
+    config.load_remote_config()
+    
+    # Auto-register webhooks for all active tenants at startup
+    import db
+    from tools.telegram_sender import register_webhook
+    tenants = db.get_all_tenants()
+    for tenant in tenants:
+        if tenant.get("telegram_bot_token") and config.APP_URL:
+            webhook_url = f"{config.APP_URL}/webhook/{tenant['telegram_bot_token']}"
+            try:
+                ok = await register_webhook(tenant["telegram_bot_token"], webhook_url)
+                print(f"[main] Webhook {'ok' if ok else 'FAILED'}: {tenant['name']}")
+            except Exception as e:
+                print(f"[main] Webhook error for {tenant['name']}: {e}")
+
     scheduler.add_job(
         run_proactive_worker,
         trigger="interval",

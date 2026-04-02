@@ -71,6 +71,7 @@ async def telegram_webhook(bot_token: str, request: Request):
         f"You are not authorized.\n"
         f"(Your ID: {chat_id})\n"
         f"Contact your administrator.")
+        return {"ok": True}
 
     # Keep bot token fresh
     if user.get("telegram_bot_token") != bot_token:
