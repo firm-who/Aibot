@@ -66,7 +66,7 @@ def get_tenant_by_bot_token(bot_token: str) -> dict | None:
     )
     if resp.data:
         _tenant_cache[bot_token] = resp.data
-    return resp.data if resp.data else None
+    return resp.data if resp else None
 
 def get_all_tenants() -> list[dict]:
     resp = get_client().table("tenants").select("*").eq("is_active", True).execute()
@@ -166,7 +166,7 @@ def get_user_by_telegram_id(telegram_chat_id: int,
     if tenant_id:
         q = q.eq("tenant_id", tenant_id)
     resp = q.maybe_single().execute()
-    return resp.data if resp.data else None
+    return resp.data if resp else None
 
 def get_all_active_users() -> list[dict]:
     resp = get_client().table("users").select("*").execute()
@@ -394,7 +394,7 @@ def get_pending_browser_session(user_id: str) -> dict | None:
         .maybe_single()
         .execute()
     )
-    return resp.data if resp.data else None
+    return resp.data if resp else None
 
 def delete_pending_browser_session(user_id: str) -> None:
     get_client().table("browser_sessions").delete().eq("user_id", user_id).execute()
