@@ -211,6 +211,7 @@ async def run_agent(user_message: str, user: dict, user_config: dict,
             return result["text"] or "I'm not sure how to respond to that."
 
         tool_results = []
+        browser_used = False
         for tc in result["tool_calls"]:
             tool_output = await execute_tool(
                 tool_name=tc["name"],
@@ -225,6 +226,8 @@ async def run_agent(user_message: str, user: dict, user_config: dict,
                 "name":         tc["name"],
                 "content":      tool_output,
             })
+            if tc["name"] == "browse_url":
+                browser_used = True
 
         assistant_msg: dict = {"role": "assistant", "content": result["text"] or ""}
         if result["tool_calls"]:
@@ -239,6 +242,9 @@ async def run_agent(user_message: str, user: dict, user_config: dict,
                 "role": "tool", "tool_call_id": tr["tool_call_id"],
                 "name": tr["name"], "content": tr["content"],
             })
+
+        if browser_used:
+            return result.get("text") or "Task completed."
 
     return result.get("text") or "Task completed."
 
