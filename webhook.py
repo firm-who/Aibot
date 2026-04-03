@@ -79,9 +79,7 @@ async def telegram_webhook(bot_token: str, request: Request):
 
     db.update_user_last_active(user["id"])
 
-    # ── 3. Log usage ──────────────────────────────────────────────────────────
-    if tenant_id:
-        db.log_usage(tenant_id, user["id"], "message")
+    
 
     # ── 4. Gmail connect intent ───────────────────────────────────────────────
     text_lower = text.lower().strip()
