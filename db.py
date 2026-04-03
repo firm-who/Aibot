@@ -55,13 +55,13 @@ def get_tenant_by_bot_token(bot_token: str) -> dict | None:
     """Look up tenant by their Telegram bot token. Cached per process."""
     if bot_token in _tenant_cache:
         return _tenant_cache[bot_token]
-    resp = (
+     resp = (
         get_client()
         .table("tenants")
         .select("*")
         .eq("telegram_bot_token", bot_token)
         .eq("is_active", True)
-        .single()
+        .maybe_single()
         .execute()
     )
     if resp.data:
@@ -165,7 +165,7 @@ def get_user_by_telegram_id(telegram_chat_id: int,
     )
     if tenant_id:
         q = q.eq("tenant_id", tenant_id)
-    resp = q.single().execute()
+    resp = q.maybe_single().execute()
     return resp.data if resp.data else None
 
 def get_all_active_users() -> list[dict]:
@@ -326,7 +326,7 @@ def get_behaviour_state(user_id: str) -> dict:
         .table("behaviour_state")
         .select("*")
         .eq("user_id", user_id)
-        .single()
+        .maybe_single()
         .execute()
     )
     if resp.data:
@@ -391,7 +391,7 @@ def get_pending_browser_session(user_id: str) -> dict | None:
         .table("browser_sessions")
         .select("*")
         .eq("user_id", user_id)
-        .single()
+        .maybe_single()
         .execute()
     )
     return resp.data if resp.data else None
