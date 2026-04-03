@@ -38,11 +38,7 @@ async def execute_tool(tool_name: str, arguments: dict, user: dict,
         elif tool_name == "web_search":
             return await _execute_web_search(arguments)
 
-        # ── Browser ────────────────────────────────────────────────────────────
-        elif tool_name == "browse_url":
-            return await _execute_browse_url(
-                arguments, user_config, user, telegram_chat_id, bot_token
-            )
+        
 
         # ── Tasks ──────────────────────────────────────────────────────────────
         elif tool_name == "save_task_with_followup":
@@ -167,7 +163,7 @@ async def _execute_read_emails(args: dict, user_config: dict) -> str:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  WEB + BROWSER + TASKS  (unchanged)
+#  WEB + TASKS
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def _execute_web_search(args: dict) -> str:
@@ -175,26 +171,6 @@ async def _execute_web_search(args: dict) -> str:
     return web_search(query=args["query"], max_results=args.get("max_results", 5))
 
 
-async def _execute_browse_url(args: dict, user_config: dict,
-                               user: dict, telegram_chat_id: int, bot_token: str) -> str:
-    from browser import browse_url
-    from telegram_sender import send_photo_base64
-    result = await browse_url(
-        url=args["url"], instruction=args["instruction"],
-        user_config=user_config,
-        screenshot_before_submit=args.get("screenshot_before_submit", True),
-    )
-    if result.get("screenshot_base64") and bot_token:
-        caption = ("I've filled the form. Reply *yes* to submit or *no* to cancel."
-                   if result.get("needs_confirmation") else "Done! Here's a screenshot.")
-        await send_photo_base64(bot_token, telegram_chat_id, result["screenshot_base64"], caption)
-    if result.get("needs_confirmation") and result.get("session_id"):
-        db.save_pending_browser_session(
-            user_id=user["id"], session_id=result["session_id"],
-            instruction=args["instruction"], url=args["url"],
-        )
-        return "Screenshot sent. Waiting for your yes/no confirmation."
-    return result.get("result", "Browser action completed.")
 
 
 async def _execute_save_task(args: dict, user_id: str) -> str:

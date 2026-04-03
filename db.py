@@ -148,8 +148,6 @@ def get_user_config(user: dict, tenant: dict | None = None) -> dict:
         # Meta
         "tenant_id": t.get("id"),
         "timezone":  user.get("timezone", "UTC"),
-        "browserbase_api_key":    (user.get("browserbase_api_key") or ai.get("browserbase_api_key")),
-        "browserbase_project_id": (user.get("browserbase_project_id") or ai.get("browserbase_project_id")),
     }
 
 
@@ -374,67 +372,35 @@ def update_job_next_run(job_id: str, next_run_at: str) -> None:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  BROWSER SESSIONS
-# ═══════════════════════════════════════════════════════════════════════════════
-
-def save_pending_browser_session(user_id: str, session_id: str,
-                                 instruction: str, url: str) -> None:
-    get_client().table("browser_sessions").upsert({
-        "user_id":     user_id,
-        "session_id":  session_id,
-        "instruction": instruction,
-        "url":         url,
-        "created_at":  datetime.now(timezone.utc).isoformat(),
-    }, on_conflict="user_id").execute()
-
-def get_pending_browser_session(user_id: str) -> dict | None:
-    resp = (
-        get_client()
-        .table("browser_sessions")
-        .select("*")
-        .eq("user_id", user_id)
-        .maybe_single()
-        .execute()
-    )
-    return resp.data if resp else None
-
-def delete_pending_browser_session(user_id: str) -> None:
-    get_client().table("browser_sessions").delete().eq("user_id", user_id).execute()
+# #  BROWSER SESSIONS
+# # ═══════════════════════════════════════════════════════════════════════════════
+# 
+# def save_pending_browser_session(user_id: str, session_id: str,
+#                                  instruction: str, url: str) -> None:
+#     get_client().table("browser_sessions").upsert({
+#         "user_id":     user_id,
+#         "session_id":  session_id,
+#         "instruction": instruction,
+#         "url":         url,
+#         "created_at":  datetime.now(timezone.utc).isoformat(),
+#     }, on_conflict="user_id").execute()
+# 
+# def get_pending_browser_session(user_id: str) -> dict | None:
+#     resp = (
+#         get_client()
+#         .table("browser_sessions")
+#         .select("*")
+#         .eq("user_id", user_id)
+#         .maybe_single()
+#         .execute()
+#     )
+#     return resp.data if resp else None
+# 
+# def delete_pending_browser_session(user_id: str) -> None:
+    
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  USAGE LOGGING  (for billing)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def log_usage(tenant_id: str, user_id: str, event_type: str) -> None:
-    """
-    Log a billable event. Call this whenever something happens you want to charge for.
-    event_type examples: 'message', 'email_sent', 'browser_task', 'memory_saved'
-    """
-    try:
-        get_client().table("usage_log").insert({
-            "tenant_id":  tenant_id,
-            "user_id":    user_id,
-            "event_type": event_type,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }).execute()
-    except Exception as e:
-        print(f"[db] usage log error: {e}")
-
-def get_tenant_usage(tenant_id: str, since_days: int = 30) -> dict:
-    """Get usage counts per event type for a tenant over the last N days."""
-    from datetime import timedelta
-    since = (datetime.now(timezone.utc) - timedelta(days=since_days)).isoformat()
-    resp = (
-        get_client()
-        .table("usage_log")
-        .select("event_type")
-        .eq("tenant_id", tenant_id)
-        .gte("created_at", since)
-        .execute()
-    )
-    counts: dict[str, int] = {}
-    for row in (resp.data or []):
-        e = row["event_type"]
-        counts[e] = counts.get(e, 0) + 1
-    return counts

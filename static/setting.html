@@ -3,477 +3,1025 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Agent Setup | Personal AI</title>
+<title>Agent Setup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --bg: #050505;
-    --surface: #0f0f12;
-    --surface-hover: #16161a;
-    --border: rgba(255, 255, 255, 0.08);
-    --border-bright: rgba(255, 255, 255, 0.15);
-    --primary: #6366f1; /* Electric Indigo */
-    --primary-dim: rgba(99, 102, 241, 0.1);
-    --text: #ffffff;
-    --text-muted: #a1a1aa;
-    --success: #10b981;
-    --error: #ef4444;
-    --font-main: 'Inter', -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --bg:           #04040a;
+    --surface:      #0c0c14;
+    --surface-2:    #121220;
+    --border:       rgba(255,255,255,0.07);
+    --border-mid:   rgba(255,255,255,0.12);
+    --border-hi:    rgba(255,255,255,0.2);
+    --accent:       #5b5ef4;
+    --accent-glow:  rgba(91,94,244,0.25);
+    --accent-dim:   rgba(91,94,244,0.1);
+    --text:         #f0f0f8;
+    --muted:        #6b6b7e;
+    --muted-mid:    #9090a8;
+    --success:      #22d3a5;
+    --success-dim:  rgba(34,211,165,0.12);
+    --error:        #f43f5e;
+    --error-dim:    rgba(244,63,94,0.12);
+    --warning:      #f59e0b;
+    --font:         'Syne', sans-serif;
+    --mono:         'JetBrains Mono', monospace;
+    --r:            14px;
+    --r-sm:         8px;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
 
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: var(--font-main);
-    line-height: 1.5;
+    font-family: var(--font);
+    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
 
-  /* Subtle background radial glow */
+  /* ── Animated grid background ── */
   body::before {
     content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(91,94,244,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,94,244,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  body::after {
+    content: "";
     position: fixed;
-    top: 0; left: 50%;
+    top: -40vh; left: 50%;
     transform: translateX(-50%);
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle at 50% -20%, #1e1e2e 0%, transparent 70%);
-    z-index: -1;
+    width: 80vw; height: 80vh;
+    background: radial-gradient(ellipse at center, rgba(91,94,244,0.12) 0%, transparent 70%);
+    z-index: 0;
     pointer-events: none;
   }
 
   .page {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    padding: 80px 24px 120px;
     min-height: 100vh;
-    padding: 60px 24px;
   }
 
   .container {
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
   }
 
-  /* ── Header ─────────────────────────────────────── */
+  /* ── Header ── */
   .header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s ease both;
   }
 
-  .badge {
+  .eyebrow {
     display: inline-flex;
     align-items: center;
-    padding: 4px 12px;
+    gap: 8px;
+    padding: 5px 14px;
     border-radius: 100px;
-    background: var(--primary-dim);
-    color: var(--primary);
+    border: 1px solid rgba(91,94,244,0.3);
+    background: var(--accent-dim);
+    color: var(--accent);
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 20px;
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    margin-bottom: 24px;
+  }
+
+  .eyebrow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 2s ease infinite;
   }
 
   h1 {
-    font-size: 40px;
-    font-weight: 700;
+    font-size: clamp(36px, 6vw, 52px);
+    font-weight: 800;
     letter-spacing: -0.04em;
-    line-height: 1.1;
-    margin-bottom: 12px;
+    line-height: 1.05;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff 40%, rgba(91,94,244,0.7));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .sub {
-    color: var(--text-muted);
-    font-size: 16px;
-    max-width: 380px;
-    margin: 0 auto;
+  .subtitle {
+    color: var(--muted-mid);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
   }
 
-  /* ── Cards ──────────────────────────────────────── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-  }
-
-  .card:hover {
-    border-color: var(--border-bright);
-    transform: translateY(-2px);
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .step-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: var(--bg);
-    border: 1px solid var(--border);
+  /* ── Progress track ── */
+  .progress-track {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
+    gap: 0;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s 0.1s ease both;
   }
 
-  .card.active-step .step-num {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+  .prog-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
   }
+
+  .prog-circle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-mid);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    color: var(--muted);
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .prog-step.active .prog-circle {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .prog-step.done .prog-circle {
+    border-color: var(--success);
+    background: var(--success-dim);
+    color: var(--success);
+  }
+
+  .prog-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.4s;
+  }
+
+  .prog-step.active .prog-label { color: var(--accent); }
+  .prog-step.done .prog-label { color: var(--success); }
+
+  .prog-line {
+    width: 64px; height: 1.5px;
+    background: var(--border-mid);
+    margin: 0 4px;
+    margin-bottom: 22px;
+    transition: background 0.4s;
+    flex-shrink: 0;
+  }
+
+  .prog-line.done { background: var(--success); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 28px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s, opacity 0.3s;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(91,94,244,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card.active::before { opacity: 1; }
+  .card.active {
+    border-color: rgba(91,94,244,0.25);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(91,94,244,0.1);
+  }
+
+  .card.locked {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .card.done {
+    border-color: rgba(34,211,165,0.2);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(34,211,165,0.03) 100%);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .card-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .card.active .card-icon {
+    border-color: rgba(91,94,244,0.4);
+    background: var(--accent-dim);
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  .card.done .card-icon {
+    border-color: rgba(34,211,165,0.4);
+    background: var(--success-dim);
+  }
+
+  .card-title-group { flex: 1; }
 
   .card-title {
-    font-size: 16px;
-    font-weight: 600;
-    flex-grow: 1;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 
-  .status-pill {
+  .card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  .card-badge {
     font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: rgba(255,255,255,0.05);
-    color: var(--text-muted);
-  }
-
-  /* ── Inputs ─────────────────────────────────────── */
-  .field-group { margin-bottom: 16px; }
-
-  .label {
-    display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-  }
-
-  .input-container {
-    position: relative;
-    background: var(--bg);
-    border-radius: 10px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
     border: 1px solid var(--border);
-    transition: border-color 0.2s;
   }
 
-  .input-container:focus-within {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 1px var(--primary);
+  .card-badge.required {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: rgba(91,94,244,0.25);
+  }
+
+  .card-badge.optional {
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+  }
+
+  .card-badge.success {
+    background: var(--success-dim);
+    color: var(--success);
+    border-color: rgba(34,211,165,0.25);
+  }
+
+  /* ── Fields ── */
+  .fields { display: flex; flex-direction: column; gap: 16px; }
+
+  .field { display: flex; flex-direction: column; gap: 7px; }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-mid);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field-label .hint {
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .input-wrap {
+    position: relative;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border-mid);
+    background: var(--bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .input-wrap.error-state {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px var(--error-dim);
+  }
+
+  .input-wrap.success-state {
+    border-color: var(--success);
+    box-shadow: 0 0 0 3px var(--success-dim);
   }
 
   input {
     width: 100%;
     background: transparent;
     border: none;
-    padding: 12px 16px;
+    padding: 12px 14px;
     color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 14px;
+    font-family: var(--mono);
+    font-size: 13px;
     outline: none;
+    line-height: 1;
   }
 
-  .toggle-btn {
+  input::placeholder { color: var(--muted); font-family: var(--mono); }
+
+  .input-suffix {
     position: absolute;
-    right: 12px;
-    top: 50%;
+    right: 12px; top: 50%;
     transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 16px;
+    display: flex; align-items: center; gap: 8px;
   }
 
-  /* ── Buttons ─────────────────────────────────────── */
+  .vis-btn {
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-size: 14px; padding: 2px;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .vis-btn:hover { color: var(--text); }
+
+  .input-status {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: all 0.3s;
+  }
+
+  .input-status.ok { background: var(--success); opacity: 1; box-shadow: 0 0 6px var(--success); }
+  .input-status.err { background: var(--error); opacity: 1; }
+
+  .field-hint {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+    display: flex; align-items: flex-start; gap: 5px;
+  }
+
+  .field-hint.error { color: var(--error); }
+  .field-hint.success { color: var(--success); }
+
+  /* slug preview */
+  .slug-preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted-mid);
+    margin-top: 2px;
+    transition: all 0.2s;
+  }
+
+  .slug-preview span { color: var(--accent); }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* ── Button ── */
   .btn {
     width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    font-family: var(--font-main);
+    padding: 14px 20px;
+    border-radius: var(--r-sm);
+    font-family: var(--font);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.01em;
     cursor: pointer;
-    transition: all 0.2s;
     border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
   }
 
+  .btn::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(rgba(255,255,255,0.08), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .btn:hover::after { opacity: 1; }
+
   .btn-primary {
-    background: var(--text);
-    color: var(--bg);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 20px var(--accent-glow);
   }
 
   .btn-primary:hover:not(:disabled) {
-    background: #e4e4e7;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(91,94,244,0.45);
   }
+
+  .btn-primary:active:not(:disabled) { transform: translateY(0); }
 
   .btn-primary:disabled {
-    opacity: 0.2;
+    opacity: 0.3;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
-  /* ── OAuth Section ──────────────────────────────── */
+  /* spinner inside btn */
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    min-height: 20px;
+    transition: color 0.3s;
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border-hi);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .status-bar.loading .status-dot {
+    background: var(--accent);
+    animation: blink 0.8s ease infinite alternate;
+  }
+
+  .status-bar.ok .status-dot {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+  }
+
+  .status-bar.ok { color: var(--success); }
+
+  .status-bar.err .status-dot { background: var(--error); }
+  .status-bar.err { color: var(--error); }
+
+  /* ── OAuth section ── */
   .oauth-box {
-    background: rgba(255,255,255,0.02);
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px dashed var(--border);
+    border-radius: 10px;
+    border: 1px dashed var(--border-mid);
+    background: rgba(255,255,255,0.015);
+    padding: 18px;
   }
 
-  .scope-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 12px 0;
+  .oauth-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
   }
 
-  .scope-tag {
-    background: rgba(255,255,255,0.05);
+  .scope-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .scope-chip {
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  .link-button {
-    background: var(--bg);
+    background: rgba(255,255,255,0.04);
     border: 1px solid var(--border);
-    color: var(--primary);
+    font-size: 11px;
+    color: var(--muted-mid);
+    font-family: var(--mono);
+  }
+
+  .oauth-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border-mid);
+    background: var(--bg);
+    color: var(--accent);
     text-decoration: none;
-    padding: 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
     font-size: 13px;
-    font-family: var(--font-mono);
-    margin-top: 10px;
+    font-weight: 600;
     transition: all 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
   }
 
-  .link-button:hover {
-    border-color: var(--primary);
-    background: var(--primary-dim);
+  .oauth-link.enabled {
+    opacity: 1;
+    pointer-events: all;
   }
 
-  /* ── Status Micro-copy ───────────────────────────── */
-  .helper-text {
-    display: flex;
+  .oauth-link.enabled:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    transform: translateX(2px);
+  }
+
+  /* ── Done card overlay ── */
+  .done-banner {
+    display: none;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 12px;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--r-sm);
+    background: var(--success-dim);
+    border: 1px solid rgba(34,211,165,0.25);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--success);
   }
 
-  .indicator {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--border-bright);
-  }
+  .done-banner.show { display: flex; }
 
-  .status-ok .indicator { background: var(--success); box-shadow: 0 0 8px var(--success); }
-  .status-error .indicator { background: var(--error); }
-  .status-loading .indicator { 
-    background: var(--primary); 
-    animation: pulse 1s infinite alternate;
-  }
-
-  @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
-
+  /* ── Toast ── */
   #toast {
     position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
+    bottom: 36px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
     background: var(--text);
     color: var(--bg);
-    padding: 12px 24px;
+    padding: 11px 22px;
     border-radius: 100px;
-    font-weight: 600;
-    font-size: 14px;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 1000;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 999;
+    white-space: nowrap;
   }
+
   #toast.show { transform: translateX(-50%) translateY(0); }
 
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @keyframes blink {
+    from { opacity: 0.3; }
+    to   { opacity: 1; }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.15s; }
+  .card:nth-child(2) { animation-delay: 0.25s; }
 </style>
 </head>
 <body>
 
 <div class="page">
   <div class="container">
-    
+
     <header class="header">
-      <span class="badge">Enterprise Ready</span>
+      <div class="eyebrow">
+        <div class="eyebrow-dot"></div>
+        Enterprise Ready
+      </div>
       <h1>Agent Setup</h1>
-      <p class="sub">Deploy your personal AI intelligence in seconds.</p>
+      <p class="subtitle">Register your tenant and connect your Telegram bot<br>to deploy your AI agent in seconds.</p>
     </header>
 
-    <div class="card active-step" id="card-token">
-      <div class="card-header">
-        <div class="step-num" id="num-1">1</div>
-        <div class="card-title">Telegram Integration</div>
-        <div class="status-pill" id="tag-1">Required</div>
+    <!-- Progress -->
+    <div class="progress-track">
+      <div class="prog-step active" id="prog-1">
+        <div class="prog-circle">1</div>
+        <div class="prog-label">Tenant</div>
       </div>
-
-      <div class="field-group">
-        <label class="label">Bot API Token</label>
-        <div class="input-container">
-          <input type="password" id="bot-token" placeholder="000000000:AA..." oninput="onTokenInput()" spellcheck="false">
-          <button class="toggle-btn" onclick="toggleVis('bot-token', this)">󰈈</button>
-        </div>
-      </div>
-
-      <button class="btn btn-primary" id="save-btn" onclick="saveToken()" disabled>
-        Activate Agent
-      </button>
-
-      <div class="helper-text" id="token-status">
-        <div class="indicator"></div>
-        <span>Awaiting token from @BotFather</span>
+      <div class="prog-line" id="prog-line-1"></div>
+      <div class="prog-step" id="prog-2">
+        <div class="prog-circle">2</div>
+        <div class="prog-label">Google</div>
       </div>
     </div>
 
-    <div class="card" id="card-google" style="opacity: 0.6;">
-      <div class="card-header">
-        <div class="step-num" id="num-2">2</div>
-        <div class="card-title">Google Workspace</div>
-        <div class="status-pill" id="tag-2">Optional</div>
+    <!-- ── Card 1: Tenant Setup ── -->
+    <div class="card active" id="card-tenant">
+      <div class="card-head">
+        <div class="card-icon">⚡</div>
+        <div class="card-title-group">
+          <div class="card-title">Tenant Registration</div>
+          <div class="card-desc">Connect your Telegram bot & register your workspace</div>
+        </div>
+        <div class="card-badge required" id="badge-1">Required</div>
+      </div>
+
+      <div class="fields">
+
+        <div class="field">
+          <label class="field-label">
+            Organisation Name
+            <span class="hint">Displayed in dashboards</span>
+          </label>
+          <div class="input-wrap" id="wrap-name">
+            <input type="text" id="input-name" placeholder="Acme Corp" autocomplete="off"
+              oninput="onNameInput()" spellcheck="false"/>
+            <div class="input-suffix">
+              <div class="input-status" id="status-name"></div>
+            </div>
+          </div>
+          <div class="field-hint" id="hint-name">Your tenant's display name.</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">
+            Slug
+            <span class="hint">URL-safe identifier</span>
+          </label>
+          <div class="input-wrap" id="wrap-slug">
+            <input type="text" id="input-slug" placeholder="acme-corp" autocomplete="off"
+              oninput="onSlugInput()" spellcheck="false"/>
+            <div class="input-suffix">
+              <div class="input-status" id="status-slug"></div>
+            </div>
+          </div>
+          <div class="slug-preview" id="slug-preview">
+            /tenant/<span id="slug-val">…</span>
+          </div>
+          <div class="field-hint" id="hint-slug">Lowercase letters, numbers and hyphens only.</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">
+            Telegram Bot Token
+            <span class="hint">From @BotFather</span>
+          </label>
+          <div class="input-wrap" id="wrap-token">
+            <input type="password" id="input-token" placeholder="000000000:AA…"
+              oninput="onTokenInput()" spellcheck="false" autocomplete="off"/>
+            <div class="input-suffix">
+              <button class="vis-btn" onclick="toggleVis()" title="Show/hide token">👁</button>
+              <div class="input-status" id="status-token"></div>
+            </div>
+          </div>
+          <div class="field-hint" id="hint-token">Create a bot at <strong style="color:var(--muted-mid)">@BotFather</strong> on Telegram.</div>
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <button class="btn btn-primary" id="submit-btn" onclick="submitTenant()" disabled>
+        <span id="btn-label">Activate Agent</span>
+      </button>
+
+      <div class="status-bar" id="status-bar-1">
+        <div class="status-dot"></div>
+        <span id="status-msg-1">Fill in all fields to continue</span>
+      </div>
+
+      <div class="done-banner" id="done-banner-1">
+        ✅ <span id="done-msg-1">Tenant registered & webhook active</span>
+      </div>
+    </div>
+
+    <!-- ── Card 2: Google Workspace ── -->
+    <div class="card locked" id="card-google">
+      <div class="card-head">
+        <div class="card-icon">🔗</div>
+        <div class="card-title-group">
+          <div class="card-title">Google Workspace</div>
+          <div class="card-desc">Optional — enables Gmail, Drive & Calendar tools</div>
+        </div>
+        <div class="card-badge optional" id="badge-2">Optional</div>
       </div>
 
       <div class="oauth-box">
-        <p class="label" style="margin-bottom:4px">Data Access Permissions</p>
-        <div class="scope-tags">
-          <span class="scope-tag">Gmail</span>
-          <span class="scope-tag">Drive</span>
-          <span class="scope-tag">Calendar</span>
-          <span class="scope-tag">Sheets</span>
+        <div class="oauth-label">Data Access Permissions</div>
+        <div class="scope-chips">
+          <span class="scope-chip">gmail.readonly</span>
+          <span class="scope-chip">gmail.send</span>
+          <span class="scope-chip">drive.readonly</span>
+          <span class="scope-chip">calendar.events</span>
         </div>
-        
-        <div id="oauth-link-wrap">
-          <div class="link-button" style="opacity: 0.5; pointer-events: none;">
-            <span>Connect Google Account</span>
-          </div>
-        </div>
+        <a class="oauth-link" id="oauth-link" href="#" target="_blank" onclick="onOAuthClick()">
+          <span>🔐</span>
+          <span>Authorize via Google</span>
+        </a>
       </div>
 
-      <div class="helper-text" id="google-status" style="margin-top:16px">
-        <div class="indicator"></div>
-        <span>Waiting for Step 1 completion</span>
+      <div class="status-bar" id="status-bar-2" style="margin-top:16px">
+        <div class="status-dot"></div>
+        <span id="status-msg-2">Complete Step 1 first</span>
       </div>
     </div>
 
   </div>
 </div>
 
-<div id="toast">Token Verified Successfully</div>
+<div id="toast"></div>
 
 <script>
-const BACKEND = window.BACKEND_URL || '';
-let chatId = null;
+  // ── Config ──────────────────────────────────────────────────────
+  // Change this to window.BACKEND_URL if served from your backend
+  const BACKEND = window.BACKEND_URL || 'https://aiagent-b1sa.onrender.com';
 
-function toggleVis(id, btn) {
-  const el = document.getElementById(id);
-  el.type = el.type === 'password' ? 'text' : 'password';
-  btn.textContent = el.type === 'password' ? '󰈈' : '󰈉';
-}
+  let tenantId = null;
+  let tokenVisible = false;
 
-function onTokenInput() {
-  const val = document.getElementById('bot-token').value.trim();
-  const btn = document.getElementById('save-btn');
-  btn.disabled = !/^\d+:[A-Za-z0-9_-]{30,}$/.test(val);
-}
-
-function setStatus(id, state, msg) {
-  const el = document.getElementById(id);
-  el.className = 'helper-text status-' + state;
-  el.querySelector('span').textContent = msg;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-async function saveToken() {
-  const token = document.getElementById('bot-token').value.trim();
-  const btn = document.getElementById('save-btn');
-  
-  btn.disabled = true;
-  btn.textContent = "Verifying...";
-  setStatus('token-status', 'loading', 'Contacting Telegram servers...');
-
-  try {
-    // 1. Validate with Telegram
-    const meRes = await fetch(`https://api.telegram.org/bot${token}/getMe`);
-    const me = await meRes.json();
-    if (!me.ok) throw new Error('Invalid Bot Token');
-
-    // ... existing Telegram checks ...
-
-    // 2. ✅ NEW: Save to Supabase via backend
-    const saveRes = await fetch(`${BACKEND}/api/save-bot-token?bot_token=${token}`, {
-      method: 'POST'
-    });
-    const saved = await saveRes.json();
-    if (!saved.ok) throw new Error('Failed to save to database');
-
-    // Success styling
-    document.getElementById('card-token').classList.remove('active-step');
-    // ... rest of success code
-    
-  } catch (e) {
-    setStatus('token-status', 'error', e.message);
-    btn.disabled = false;
-    btn.textContent = "Try Again";
+  // ── Helpers ──────────────────────────────────────────────────────
+  function toggleVis() {
+    const inp = document.getElementById('input-token');
+    tokenVisible = !tokenVisible;
+    inp.type = tokenVisible ? 'text' : 'password';
   }
-}
 
-function renderOAuthLink(cid) {
-  const wrap = document.getElementById('oauth-link-wrap');
-  const url = `${BACKEND}/auth/google?telegram_chat_id=${cid}`;
-  
-  wrap.innerHTML = `
-    <a class="link-button" href="${url}" target="_blank" onclick="startOAuthWatch()">
-      <span style="font-size:18px">󰊭</span>
-      <span>Authorize via Google Cloud</span>
-    </a>`;
-  
-  setStatus('google-status', 'loading', 'Awaiting authorization...');
-}
+  function toast(msg, duration = 3000) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), duration);
+  }
 
-function startOAuthWatch() {
-  showToast("Opening Google Secure Login...");
-  // Polling logic would go here
-}
+  function setWrapState(id, state) {
+    // state: '', 'ok', 'err'
+    const wrap = document.getElementById('wrap-' + id);
+    const dot  = document.getElementById('status-' + id);
+    wrap.classList.remove('error-state', 'success-state');
+    dot.classList.remove('ok', 'err');
+    if (state === 'ok')  { wrap.classList.add('success-state'); dot.classList.add('ok'); }
+    if (state === 'err') { wrap.classList.add('error-state');   dot.classList.add('err'); }
+  }
+
+  function setHint(id, msg, type = '') {
+    const el = document.getElementById('hint-' + id);
+    el.textContent = msg;
+    el.className = 'field-hint' + (type ? ' ' + type : '');
+  }
+
+  function setStatusBar(num, state, msg) {
+    const bar = document.getElementById('status-bar-' + num);
+    const txt = document.getElementById('status-msg-' + num);
+    bar.className = 'status-bar' + (state ? ' ' + state : '');
+    txt.textContent = msg;
+  }
+
+  function slugify(str) {
+    return str.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  // ── Field handlers ────────────────────────────────────────────────
+  function onNameInput() {
+    const val = document.getElementById('input-name').value.trim();
+
+    if (val.length === 0) {
+      setWrapState('name', '');
+      setHint('name', 'Your tenant\'s display name.');
+    } else if (val.length < 2) {
+      setWrapState('name', 'err');
+      setHint('name', 'Name must be at least 2 characters.', 'error');
+    } else {
+      setWrapState('name', 'ok');
+      setHint('name', 'Looks good!', 'success');
+      // Auto-fill slug if empty
+      const slugEl = document.getElementById('input-slug');
+      if (!slugEl.value) {
+        const auto = slugify(val);
+        slugEl.value = auto;
+        onSlugInput();
+      }
+    }
+    checkReady();
+  }
+
+  function onSlugInput() {
+    const raw = document.getElementById('input-slug').value;
+    const clean = slugify(raw);
+    const display = document.getElementById('input-slug');
+
+    document.getElementById('slug-val').textContent = clean || '…';
+
+    if (raw.length === 0) {
+      setWrapState('slug', '');
+      setHint('slug', 'Lowercase letters, numbers and hyphens only.');
+    } else if (clean.length < 2) {
+      setWrapState('slug', 'err');
+      setHint('slug', 'Slug too short or contains invalid characters.', 'error');
+    } else if (clean !== raw) {
+      setWrapState('slug', 'err');
+      setHint('slug', `Invalid chars — will be saved as: ${clean}`, 'error');
+    } else {
+      setWrapState('slug', 'ok');
+      setHint('slug', 'Valid slug ✓', 'success');
+    }
+    checkReady();
+  }
+
+  function onTokenInput() {
+    const val = document.getElementById('input-token').value.trim();
+    const valid = /^\d{8,12}:[A-Za-z0-9_-]{35,}$/.test(val);
+
+    if (val.length === 0) {
+      setWrapState('token', '');
+      setHint('token', 'Create a bot at @BotFather on Telegram.');
+    } else if (valid) {
+      setWrapState('token', 'ok');
+      setHint('token', 'Token format looks valid.', 'success');
+    } else {
+      setWrapState('token', 'err');
+      setHint('token', 'Invalid format. Expected: 000000000:AA…', 'error');
+    }
+    checkReady();
+  }
+
+  function checkReady() {
+    const name  = document.getElementById('input-name').value.trim();
+    const slug  = slugify(document.getElementById('input-slug').value);
+    const token = document.getElementById('input-token').value.trim();
+    const tokenOk = /^\d{8,12}:[A-Za-z0-9_-]{35,}$/.test(token);
+    const btn   = document.getElementById('submit-btn');
+    btn.disabled = !(name.length >= 2 && slug.length >= 2 && tokenOk);
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────
+  async function submitTenant() {
+    const name  = document.getElementById('input-name').value.trim();
+    const slug  = slugify(document.getElementById('input-slug').value);
+    const token = document.getElementById('input-token').value.trim();
+    const btn   = document.getElementById('submit-btn');
+
+    // Loading state
+    btn.disabled = true;
+    document.getElementById('btn-label').innerHTML = '<div class="spinner"></div> Verifying…';
+    setStatusBar(1, 'loading', 'Validating token with Telegram…');
+
+    try {
+      // 1. Verify token with Telegram
+      const meRes = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+      const me = await meRes.json();
+      if (!me.ok) throw new Error('Invalid bot token — check with @BotFather');
+
+      const botName = me.result.username;
+      setStatusBar(1, 'loading', `@${botName} verified — registering tenant…`);
+
+      // 2. Register tenant on backend
+      const saveRes = await fetch(`${BACKEND}/api/setup-tenant`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:               name,
+          slug:               slug,
+          telegram_bot_token: token
+        })
+      });
+
+      if (!saveRes.ok) {
+        const err = await saveRes.json().catch(() => ({}));
+        throw new Error(err.error || `Server error ${saveRes.status}`);
+      }
+
+      const saved = await saveRes.json();
+      if (!saved.ok) throw new Error(saved.error || 'Failed to register tenant');
+
+      tenantId = saved.tenant_id;
+
+      // ── Success ──
+      setStatusBar(1, 'ok', `@${botName} connected — webhook registered`);
+
+      // Swap button to done
+      document.getElementById('btn-label').textContent = '✓ Agent Activated';
+      btn.style.background = 'var(--success)';
+      btn.style.boxShadow  = '0 4px 20px rgba(34,211,165,0.3)';
+
+      // Show done banner
+      document.getElementById('done-msg-1').textContent =
+        `@${botName} is live · Tenant ID: ${tenantId.slice(0,8)}…`;
+      document.getElementById('done-banner-1').classList.add('show');
+
+      // Card to done state
+      setTimeout(() => {
+        document.getElementById('card-tenant').classList.remove('active');
+        document.getElementById('card-tenant').classList.add('done');
+        document.getElementById('badge-1').textContent = '✓ Done';
+        document.getElementById('badge-1').className = 'card-badge success';
+      }, 600);
+
+      // Update progress
+      document.getElementById('prog-1').classList.remove('active');
+      document.getElementById('prog-1').classList.add('done');
+      document.getElementById('prog-1').querySelector('.prog-circle').textContent = '✓';
+      document.getElementById('prog-line-1').classList.add('done');
+      document.getElementById('prog-2').classList.add('active');
+
+      // Unlock Google card
+      unlockGoogleCard(tenantId);
+
+      toast(`🚀 @${botName} is live!`);
+
+    } catch (e) {
+      setStatusBar(1, 'err', e.message);
+      document.getElementById('btn-label').textContent = 'Try Again';
+      btn.disabled = false;
+    }
+  }
+
+  // ── Google Card ───────────────────────────────────────────────────
+  function unlockGoogleCard(tid) {
+    const card = document.getElementById('card-google');
+    card.classList.remove('locked');
+    card.classList.add('active');
+
+    const link = document.getElementById('oauth-link');
+    link.href = `${BACKEND}/auth/google?tenant_id=${tid}`;
+    link.classList.add('enabled');
+
+    setStatusBar(2, 'loading', 'Click below to connect Google Workspace');
+  }
+
+  function onOAuthClick() {
+    toast('Opening Google secure login…');
+    setStatusBar(2, 'loading', 'Waiting for Google authorization…');
+    // Poll for completion
+    const poll = setInterval(async () => {
+      try {
+        const res  = await fetch(`${BACKEND}/auth/google/status?tenant_id=${tenantId}`);
+        const data = await res.json();
+        if (data.connected) {
+          clearInterval(poll);
+          setStatusBar(2, 'ok', 'Google Workspace connected ✓');
+          document.getElementById('card-google').classList.remove('active');
+          document.getElementById('card-google').classList.add('done');
+          document.getElementById('badge-2').textContent = '✓ Done';
+          document.getElementById('badge-2').className = 'card-badge success';
+          document.getElementById('prog-2').classList.remove('active');
+          document.getElementById('prog-2').classList.add('done');
+          document.getElementById('prog-2').querySelector('.prog-circle').textContent = '✓';
+          toast('✅ Google connected!');
+        }
+      } catch (_) {}
+    }, 3000);
+    // Stop polling after 5 min
+    setTimeout(() => clearInterval(poll), 300000);
+  }
 </script>
 </body>
 </html>
