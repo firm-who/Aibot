@@ -18,31 +18,30 @@ import json
 import httpx
 from playwright.async_api import async_playwright, Page
 
-from config import BROWSERBASE_API_KEY, BROWSERBASE_PROJECT_ID
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  SESSION MANAGEMENT
 # ═══════════════════════════════════════════════════════════════════════════════
 
-async def _create_session() -> str:
+async def _create_session(user_config: dict) -> str:
     async with httpx.AsyncClient() as client:
         resp = await client.post(
             "https://www.browserbase.com/v1/sessions",
             headers={
-                "x-bb-api-key":  BROWSERBASE_API_KEY,
+                "x-bb-api-key":  user_config["browserbase_api_key"],
                 "Content-Type":  "application/json",
             },
-            json={"projectId": BROWSERBASE_PROJECT_ID},
+            json={"projectId": user_config["browserbase_project_id"]},
         )
         resp.raise_for_status()
         return resp.json()["id"]
 
 
-def _cdp_url(session_id: str) -> str:
+def _cdp_url(session_id: str, user_config: dict = {}) -> str:
     return (
         f"wss://connect.browserbase.com?"
-        f"apiKey={BROWSERBASE_API_KEY}&sessionId={session_id}"
+        f"apiKey={user_config.get('browserbase_api_key','')}&sessionId={session_id}"
     )
 
 
@@ -189,7 +188,7 @@ async def browse_url(url: str, instruction: str,
             "fill_log": list[str],
         }
     """
-    if not BROWSERBASE_API_KEY:
+    if not user_config.get('browserbase_api_key'):
         return {
             "success": False,
             "result": "Browser tool not configured. Set BROWSERBASE_API_KEY.",
@@ -200,8 +199,8 @@ async def browse_url(url: str, instruction: str,
         }
 
     try:
-        session_id = await _create_session()
-        cdp_url    = _cdp_url(session_id)
+        session_id = await _create_session(user_config)
+        cdp_url    = _cdp_url(session_id, user_config)
 
         async with async_playwright() as p:
             browser = await p.chromium.connect_over_cdp(cdp_url)
@@ -258,13 +257,13 @@ async def browse_url(url: str, instruction: str,
         }
 
 
-async def submit_form(session_id: str) -> dict:
+async def submit_form(session_id: str, user_config: dict = {}) -> dict:
     """
     Called after user confirms — reconnect to the live session and submit.
     """
     try:
         async with async_playwright() as p:
-            browser = await p.chromium.connect_over_cdp(_cdp_url(session_id))
+            browser = await p.chromium.connect_over_cdp(_cdp_url(session_id, user_config))
             ctx     = browser.contexts[0]
             page    = ctx.pages[0]
 

@@ -148,6 +148,8 @@ def get_user_config(user: dict, tenant: dict | None = None) -> dict:
         # Meta
         "tenant_id": t.get("id"),
         "timezone":  user.get("timezone", "UTC"),
+        "browserbase_api_key":    (user.get("browserbase_api_key") or ai.get("browserbase_api_key")),
+        "browserbase_project_id": (user.get("browserbase_project_id") or ai.get("browserbase_project_id")),
     }
 
 
