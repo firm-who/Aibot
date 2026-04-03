@@ -96,20 +96,7 @@ async def telegram_webhook(bot_token: str, request: Request):
         )
         return {"ok": True}
 
-    # ── 6. Browser confirmation check ────────────────────────────────────────
-    pending = db.get_pending_browser_session(user["id"])
-    if pending:
-        word = text_lower.rstrip("!")
-        if word in _YES:
-            asyncio.create_task(
-                _handle_browser_confirm(bot_token, chat_id, user, user_config, pending)
-            )
-            return {"ok": True}
-        elif word in _NO:
-            asyncio.create_task(
-                _handle_browser_cancel(bot_token, chat_id, user, pending)
-            )
-            return {"ok": True}
+    
 
     # ── 7. Normal agent loop ──────────────────────────────────────────────────
     asyncio.create_task(send_typing_action(bot_token, chat_id))
@@ -176,13 +163,13 @@ async def _handle_browser_confirm(bot_token, chat_id, user, user_config, pending
     else:
         await send_message(bot_token, chat_id,
             ("✓ " if result["success"] else "✗ ") + result["result"])
-    db.delete_pending_browser_session(user["id"])
+    
 
 
 async def _handle_browser_cancel(bot_token, chat_id, user, pending):
     from browser import cancel_session
     await cancel_session(pending["session_id"])
-    db.delete_pending_browser_session(user["id"])
+    
     await send_message(bot_token, chat_id, "Cancelled. Nothing was submitted.")
 
 
