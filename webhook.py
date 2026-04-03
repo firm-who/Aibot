@@ -199,7 +199,7 @@ async def run_agent(user_message: str, user: dict, user_config: dict,
     conversation   = recent_msgs + [{"role": "user", "content": user_message}]
 
     result = {}
-    for _ in range(5):
+    for _ in range(3):
         result = llm_module.call_llm(
             user=user,
             user_config=user_config,
