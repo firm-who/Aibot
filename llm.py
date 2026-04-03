@@ -60,19 +60,25 @@ Important rules:
 - If you completed a task (email sent, search done), confirm it clearly
 - If something needs follow-up later, say so and remember it
 - Never say you "can't remember" — check the memory context provided
+- Never make up facts, numbers, or information — if unsure, search first
+- If you don't know something for certain, say so and offer to search
 - Speak naturally, not like a bot
 
 Tool usage rules:
+- NEVER state facts, prices, news, people, companies, or current events from memory — always use web_search first
 - Use web_search for ALL information lookup, research, and reading tasks
 - Use browse_url ONLY when the task requires filling forms, clicking buttons, or logging in
 - Never use browse_url just to visit a webpage and read it — use web_search for that instead, as it's faster and cheaper
 """
 
 def build_system_prompt(memory_context: str = "",
-                        user_name: str = "") -> str:
+                        user_name: str = "",
+                        user: dict = {}) -> str:
     prompt = AGENT_PERSONA
     if user_name:
         prompt += f"\n\nThe user's name is {user_name}."
+    if user.get("profile_summary"):
+        prompt += f"\n\nWhat I know about this user:\n{user['profile_summary']}"
     if memory_context:
         prompt += f"\n\n{memory_context}"
     return prompt
@@ -573,6 +579,7 @@ def call_llm(user: dict, user_config: dict,
     system = build_system_prompt(
         memory_context=memory_context,
         user_name=user.get("name", ""),
+        user=user,
     )
 
     if _is_anthropic_model(model):

@@ -219,6 +219,12 @@ async def _send_daily_briefing(user: dict, user_config: dict,
         db.update_behaviour_state(user["id"],
             last_briefing_at=now.isoformat(),
             last_proactive_at=now.isoformat())
+        # Rebuild profile summary once a day
+        try:
+            from memory import rebuild_user_profile
+            rebuild_user_profile(user["id"], user_config)
+        except Exception as e:
+            print(f"[background] profile rebuild error: {e}")
 
 
 async def _send_followup_message(task: dict, user: dict, user_config: dict,

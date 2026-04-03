@@ -142,3 +142,27 @@ If nothing worth saving, respond: SKIP"""
                                   memory_type="profile", importance=9)
     except Exception as e:
         print(f"[memory] profile fact error: {e}")
+
+
+def rebuild_user_profile(user_id: str, user_config: dict) -> None:
+    """Summarise all memories into a concise profile. Called daily by background worker."""
+    from llm import call_llm_raw
+    memories = db.get_all_memories(user_id)
+    if not memories:
+        return
+    mem_text = "\n".join([m["content"] for m in memories])
+    summary = call_llm_raw(
+        messages=[{"role": "user", "content": f"""Summarise everything known about this user into a concise profile (max 150 words). Include: name, business, industry, goals, clients, preferences, important context.
+
+Known facts:
+{mem_text}
+
+Write ONLY the profile summary, present tense, third person."""}],
+        user_config=user_config,
+        max_tokens=200,
+    ).strip()
+    if summary:
+        db.get_client().table("users").update(
+            {"profile_summary": summary}
+        ).eq("id", user_id).execute()
+        print(f"[memory] profile rebuilt for {user_id}")
